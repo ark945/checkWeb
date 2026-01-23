@@ -5,4 +5,5 @@
 - [x] 建立 `app.py` (Streamlit 應用程式) <!-- id: 2 -->
 - [x] 建立 `requirements.txt` <!-- id: 3 -->
 - [x] 本地驗證應用程式 <!-- id: 4 -->
-- [/] 提供 Hugging Face Spaces 部署說明 <!-- id: 5 -->
+- [/] 修正 Hugging Face 建置錯誤 (Build Error) <!-- id: 6 -->
+- [ ] 驗證部署狀態 <!-- id: 7 -->

@@ -29,8 +29,10 @@
     - 將您電腦中 `d:\MyLab\checkWeb` 資料夾內的以下檔案拖曳上傳：
         - `app.py`
         - `requirements.txt`
+        - `packages.txt` (新增：用於截圖功能)
         - `urlList.txt`
-    - 在 "Commit changes" 訊息框輸入 "Initial deploy"，然後點擊 **Commit changes to main**。
+        - `README.md`
+    - 在 "Commit changes" 訊息框輸入 "Add screenshot function"，然後點擊 **Commit changes to main**。
 
     > **進階方法 (同步 GitHub)**:
     > 您也可以在 Space 的 **Settings** 中，找到 "Docker" 或相關設定來連結 GitHub Repository，這樣每次 GitHub 更新時 Space 也會自動更新。但直接上傳檔案通常最快。
