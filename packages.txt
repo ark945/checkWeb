@@ -8,10 +8,12 @@ libxcomposite1
 libxdamage1
 libxext6
 libxfixes3
-librandr2
+libxrandr2
 libgbm1
 libpango-1.0-0
 libcairo2
 libasound2
 libxshmfence1
 libglu1-mesa
+libnspr4
+libdbus-1-3
