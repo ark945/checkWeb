@@ -5,6 +5,9 @@ from datetime import datetime
 import asyncio
 import os
 from playwright.async_api import async_playwright
+from docx import Document
+from docx.shared import Inches
+from io import BytesIO
 
 st.set_page_config(page_title="網站監控工具", page_icon="🌐", layout="wide")
 
@@ -96,6 +99,48 @@ def check_website(url):
             'Result': f'⚠️ 無法連線'
         }
 
+def create_docx(df):
+    doc = Document()
+    doc.add_heading('網站狀態監控報告', 0)
+    
+    doc.add_paragraph(f'報告產生時間: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+    
+    # Add summary table
+    table = doc.add_table(rows=1, cols=4)
+    table.style = 'Table Grid'
+    hdr_cells = table.rows[0].cells
+    hdr_cells[0].text = '名稱'
+    hdr_cells[1].text = '網址'
+    hdr_cells[2].text = '狀態'
+    hdr_cells[3].text = '回應時間 (ms)'
+    
+    for _, row in df.iterrows():
+        row_cells = table.add_row().cells
+        row_cells[0].text = str(row['名稱'])
+        row_cells[1].text = str(row['網址'])
+        row_cells[2].text = str(row['狀態'])
+        row_cells[3].text = str(row['回應時間 (ms)'])
+        
+    doc.add_page_break()
+    doc.add_heading('📸 網頁截圖詳情', level=1)
+    
+    for idx, row in df.iterrows():
+        doc.add_heading(row['名稱'], level=2)
+        doc.add_paragraph(f"網址: {row['網址']}")
+        doc.add_paragraph(f"狀態: {row['狀態']}")
+        
+        if row['截圖檔案'] and os.path.exists(row['截圖檔案']):
+            try:
+                doc.add_picture(row['截圖檔案'], width=Inches(6))
+            except Exception as e:
+                doc.add_paragraph(f"無法嵌入圖片: {e}")
+        else:
+            doc.add_paragraph("⚠️ 無法取得截圖")
+            
+    bio = BytesIO()
+    doc.save(bio)
+    return bio.getvalue()
+
 if st.button('開始檢查 🚀'):
     urls = load_urls()
     
@@ -147,12 +192,27 @@ if st.button('開始檢查 🚀'):
                 else:
                     st.warning(f"無法取得 {row['名稱']} 的截圖")
 
-        # Download button
-        csv = df.drop(columns=['截圖檔案']).to_csv(index=False).encode('utf-8-sig')
-        st.download_button(
-            "下載檢測報告 (CSV)",
-            csv,
-            "website_status_report.csv",
-            "text/csv",
-            key='download-csv'
-        )
+        # Download buttons
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            csv = df.drop(columns=['截圖檔案']).to_csv(index=False).encode('utf-8-sig')
+            st.download_button(
+                "下載檢測報告 (CSV)",
+                csv,
+                "website_status_report.csv",
+                "text/csv",
+                key='download-csv',
+                use_container_width=True
+            )
+            
+        with col2:
+            docx_data = create_docx(df)
+            st.download_button(
+                label="下載 Word 完整報告 (含截圖)",
+                data=docx_data,
+                file_name=f"website_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx",
+                mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+                key='download-docx',
+                use_container_width=True
+            )
