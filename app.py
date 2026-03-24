@@ -1,7 +1,10 @@
 import streamlit as st
 import requests
 import pandas as pd
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+# 台灣時區 (UTC+8)
+TW_TZ = timezone(timedelta(hours=8))
 import asyncio
 import os
 from playwright.async_api import async_playwright
@@ -103,7 +106,7 @@ def create_docx(df):
     doc = Document()
     doc.add_heading('網站狀態監控報告', 0)
     
-    doc.add_paragraph(f'報告產生時間: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
+    doc.add_paragraph(f'報告產生時間: {datetime.now(TW_TZ).strftime("%Y-%m-%d %H:%M:%S")}')
     
     # Add summary table
     table = doc.add_table(rows=1, cols=4)
@@ -160,7 +163,7 @@ if st.button('開始檢查 🚀'):
             
             # Check status
             check_result = check_website(item['URL'])
-            current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            current_time = datetime.now(TW_TZ).strftime("%Y-%m-%d %H:%M:%S")
             
             # Capture screenshot
             screenshot_file = f"screenshots/{i}.png"
@@ -211,7 +214,7 @@ if st.button('開始檢查 🚀'):
             st.download_button(
                 label="下載 Word 完整報告 (含截圖)",
                 data=docx_data,
-                file_name=f"website_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.docx",
+                file_name=f"website_report_{datetime.now(TW_TZ).strftime('%Y%m%d_%H%M%S')}.docx",
                 mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
                 key='download-docx',
                 use_container_width=True
