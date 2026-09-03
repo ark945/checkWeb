@@ -1,0 +1,7 @@
+__pycache__/
+*.pyc
+screenshots/
+*.docx
+*.csv
+.env
+app copy.py
